@@ -3,18 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tempfile
 import os
-import requests
-
-API_URL = os.environ.get("API_URL")
-if not API_URL:
-    try:
-        API_URL = st.secrets.get("API_URL", "http://localhost:5000")
-    except Exception:
-        API_URL = "http://localhost:5000"
-
 from engine import load_data, detect_subscriptions, detect_redundancy, user_risk_profile, predict, train_clustering, train_churn_model, MODEL_DIR
 from insights import generate_explanations, save_spend_plot
-
 
 st.set_page_config("Subscription Leakage Intelligence", layout="wide")
 st.title("Subscription Leakage Intelligence Platform")
@@ -67,17 +57,6 @@ if "Subscription" in subs.columns:
 st.subheader("💡 Why were these flagged?")
 for exp in generate_explanations(subs):
     st.info(exp)
-
-# HEALTH CHECK
-if st.button("Run Health Check"):
-    try:
-        response = requests.get(f"{API_URL}/health")
-        if response.ok:
-            st.success("API is healthy")
-        else:
-            st.error("API health check failed")
-    except Exception as e:
-        st.error(f"Health check failed: {e}")
 
 # ANALYZE
 if st.button("Analyze Subscriptions"):
